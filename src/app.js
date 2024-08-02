@@ -1,5 +1,6 @@
 const web3 = new Web3(window.ethereum);
 
+
 async function connectMetamask() {
     if (window.ethereum) {
         try {
@@ -13,8 +14,10 @@ async function connectMetamask() {
     }
 }
 
+
 const tokenAddress = '0x023031E9B7E4556897C9576e933b681A28713C55';
 const nftAddress = '0xDe930BfD586eFC8377Ee1148009325D8DED49159';
+
 
 const tokenABI = [
     {
@@ -151,6 +154,7 @@ const tokenABI = [
     }
 ];
 
+
 const nftABI = [
     {
         "inputs": [],
@@ -279,10 +283,13 @@ const nftABI = [
 ];
 
 
+const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
+const nftContract = new web3.eth.Contract(nftABI, nftAddress);
+
 async function getBalance() {
-    console.log('getBalance function called'); 
+    console.log('getBalance function called');
     const accounts = await web3.eth.getAccounts();
-    console.log('Accounts:', accounts); 
+    console.log('Accounts:', accounts);
     if (accounts.length === 0) {
         console.error('No accounts found');
         alert('Please connect to Metamask');
@@ -312,50 +319,3 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('getBalance').addEventListener('click', getBalance);
     document.getElementById('createNFT').addEventListener('click', createNFT);
 });
-
-// const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
-// const nftContract = new web3.eth.Contract(nftABI, nftAddress);
-
-// async function getBalance() {
-//     const accounts = await web3.eth.getAccounts();
-//     const balance = await tokenContract.methods.balanceOf(accounts[0]).call();
-//     console.log('Balance:', balance);
-// }
-
-// async function createNFT() {
-//     const accounts = await web3.eth.getAccounts();
-//     await nftContract.methods.createNFT().send({ from: accounts[0] });
-//     console.log('NFT created');
-// }
-
-// document.getElementById('getBalance').addEventListener('click', getBalance);
-// document.getElementById('createNFT').addEventListener('click', createNFT);
-
-
-
-
-
-// const web3 = new Web3(window.ethereum);
-
-// async function connectMetamask() {
-//     if (window.ethereum) {
-//         try {
-//             await window.ethereum.request({ method: 'eth_requestAccounts' });
-//             console.log('Metamask connected');
-//         } catch (error) {
-//             console.error('User denied account access');
-//         }
-//     } else {
-//         console.error('Metamask not found');
-//     }
-// }
-
-// const tokenAddress = 'YOUR_ERC20_CONTRACT_ADDRESS';
-// const nftAddress = 'YOUR_NFT_CONTRACT_ADDRESS';
-
-// const tokenABI = [];
-// const nftABI = [];
-
-// const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
-// const nftContract = new web3.eth.Contract(nftABI, nftAddress);
-
