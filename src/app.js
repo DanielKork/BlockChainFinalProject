@@ -14,7 +14,7 @@ async function connectMetamask() {
 }
 
 const tokenAddress = '0xf5D34B9024a2c2eD19F126411BeA741055b40fF4';
-const nftAddress = '0xA1b4eFE150FE76aD400f4e1aD02DF907ECb3AA25';
+const nftAddress = '0x2A5695Af405B3a4b57cB332B358E6655B04EC5Eb';
 
 const tokenABI = [
     {
@@ -291,17 +291,17 @@ const nftABI = [
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "owner",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "tokenId",
+                "type": "uint256"
             },
             {
-                "internalType": "address",
-                "name": "operator",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "price",
+                "type": "uint256"
             }
         ],
-        "name": "setApprovalForAll",
+        "name": "setTokenPrice",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -314,9 +314,28 @@ const nftABI = [
                 "type": "uint256"
             }
         ],
-        "name": "transferFrom",
+        "name": "buyNFT",
         "outputs": [],
-        "stateMutability": "nonpayable",
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "tokenId",
+                "type": "uint256"
+            }
+        ],
+        "name": "getTokenPrice",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     }
 ];
@@ -374,20 +393,43 @@ async function displayNFTs() {
         marketplace.innerHTML = '';
 
         for (let i = 0; i < totalSupply; i++) {
-            const owner = await nftContract.methods.ownerOf(i).call();
-            console.log(`NFT #${i} owner:`, owner);
-            if (owner.toLowerCase() === userAddress.toLowerCase()) {
+            try {
+                console.log(`Displaying NFT #${i}`);
+                const owner = await nftContract.methods.ownerOf(i).call();
+                console.log(`Owner of NFT #${i}: ${owner}`);
+                const price = await nftContract.methods.getTokenPrice(i).call();
+                console.log(`Price of NFT #${i}: ${price}`);
+                const priceInEther = web3.utils.fromWei(price, 'ether');
+                console.log(`Price in Ether of NFT #${i}: ${priceInEther}`);
+
                 const card = document.createElement('div');
                 card.className = 'col-md-4';
-                card.innerHTML = `
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">NFT #${i}</h5>
-                            <p class="card-text">Owner: ${owner}</p>
+                if (owner.toLowerCase() === userAddress.toLowerCase()) {
+                    card.innerHTML = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">NFT #${i}</h5>
+                                <p class="card-text">Owner: ${owner}</p>
+                                <input type="number" id="price-${i}" placeholder="Set price in ETH" />
+                                <button onclick="setTokenPrice(${i}, document.getElementById('price-${i}').value)">Set Price</button>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                } else {
+                    card.innerHTML = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">NFT #${i}</h5>
+                                <p class="card-text">Owner: ${owner}</p>
+                                <p class="card-text">Price: ${priceInEther} ETH</p>
+                                <button onclick="buyNFT(${i}, '${priceInEther}')">Buy</button>
+                            </div>
+                        </div>
+                    `;
+                }
                 marketplace.appendChild(card);
+            } catch (error) {
+                console.error(`Error displaying NFT #${i}:`, error);
             }
         }
     } catch (error) {
@@ -396,13 +438,40 @@ async function displayNFTs() {
     }
 }
 
+async function setTokenPrice(tokenId, price) {
+    const accounts = await web3.eth.getAccounts();
+    try {
+        await nftContract.methods.setTokenPrice(tokenId, web3.utils.toWei(price, 'ether')).send({ from: accounts[0] });
+        console.log(`Price set for NFT #${tokenId}`);
+        displayNFTs();
+    } catch (error) {
+        console.error('Error setting price:', error);
+        alert('Error setting price: ' + error.message);
+    }
+}
+
+async function buyNFT(tokenId, price) {
+    const accounts = await web3.eth.getAccounts();
+    try {
+        await nftContract.methods.buyNFT(tokenId).send({ from: accounts[0], value: web3.utils.toWei(price, 'ether') });
+        console.log(`NFT #${tokenId} purchased`);
+        alert(`NFT #${tokenId} purchased`);
+        displayNFTs();
+    } catch (error) {
+        console.error('Error buying NFT:', error);
+        alert('Error buying NFT: ' + error.message);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM content loaded');
     await connectMetamask();
-    await displayNFTs(); // Display NFTs immediately upon page load
+    await displayNFTs();
     document.getElementById('getBalance').addEventListener('click', getBalance);
     document.getElementById('createNFT').addEventListener('click', createNFT);
 });
+
+
 
 
 
@@ -730,46 +799,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 //         "outputs": [],
 //         "stateMutability": "nonpayable",
 //         "type": "function"
-//     },
-//     {
-//         "inputs": [
-//             {
-//                 "internalType": "uint256",
-//                 "name": "tokenId",
-//                 "type": "uint256"
-//             }
-//         ],
-//         "name": "tokenPrices",
-//         "outputs": [
-//             {
-//                 "internalType": "uint256",
-//                 "name": "",
-//                 "type": "uint256"
-//             }
-//         ],
-//         "stateMutability": "view",
-//         "type": "function"
 //     }
 // ];
 
 // const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
 // const nftContract = new web3.eth.Contract(nftABI, nftAddress);
 
-// async function getAccounts() {
-//     const accounts = await web3.eth.getAccounts();
-//     if (accounts.length === 0) {
-//         alert('Please connect to Metamask');
-//         return [];
-//     }
-//     return accounts;
-// }
-
 // async function getBalance() {
-//     const accounts = await getAccounts();
-//     if (accounts.length === 0) return;
-
+//     console.log('getBalance function called');
+//     const accounts = await web3.eth.getAccounts();
+//     console.log('Accounts:', accounts);
+//     if (accounts.length === 0) {
+//         console.error('No accounts found');
+//         alert('Please connect to Metamask');
+//         return;
+//     }
 //     try {
 //         const balance = await tokenContract.methods.balanceOf(accounts[0]).call();
+//         console.log('Balance:', balance);
 //         alert(`Balance: ${balance}`);
 //     } catch (error) {
 //         console.error('Error getting balance:', error);
@@ -778,11 +825,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 // }
 
 // async function createNFT() {
-//     const accounts = await getAccounts();
-//     if (accounts.length === 0) return;
-
+//     console.log('createNFT function called');
+//     const accounts = await web3.eth.getAccounts();
+//     console.log('Accounts:', accounts);
+//     if (accounts.length === 0) {
+//         console.error('No accounts found');
+//         alert('Please connect to Metamask');
+//         return;
+//     }
 //     try {
 //         await nftContract.methods.createNFT().send({ from: accounts[0] });
+//         console.log('NFT created');
 //         alert('NFT created');
 //         displayNFTs();
 //     } catch (error) {
@@ -791,80 +844,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 //     }
 // }
 
-// async function setTokenPrice(tokenId, price) {
-//     const accounts = await getAccounts();
-//     if (accounts.length === 0) return;
-
-//     try {
-//         await nftContract.methods.setTokenPrice(tokenId, web3.utils.toWei(price, 'ether')).send({ from: accounts[0] });
-//         alert(`Price set for NFT #${tokenId}`);
-//         displayNFTs();
-//     } catch (error) {
-//         console.error('Error setting price:', error);
-//         alert('Error setting price: ' + error.message);
-//     }
-// }
-
-// async function buyNFT(tokenId, price) {
-//     const accounts = await getAccounts();
-//     if (accounts.length === 0) return;
-
-//     try {
-//         await nftContract.methods.buyNFT(tokenId).send({ from: accounts[0], value: web3.utils.toWei(price, 'ether') });
-//         alert(`NFT #${tokenId} purchased`);
-//         displayNFTs();
-//     } catch (error) {
-//         console.error('Error buying NFT:', error);
-//         alert('Error buying NFT: ' + error.message);
-//     }
-// }
-
 // async function displayNFTs() {
+//     console.log('displayNFTs function called');
 //     try {
 //         const totalSupply = await nftContract.methods.getTokenCounter().call();
-//         const accounts = await getAccounts();
-//         if (accounts.length === 0) return;
-
+//         console.log('Total supply:', totalSupply);
+//         const accounts = await web3.eth.getAccounts();
 //         const userAddress = accounts[0];
 //         const marketplace = document.getElementById('marketplace');
 //         marketplace.innerHTML = '';
 
 //         for (let i = 0; i < totalSupply; i++) {
-//             let owner, price;
-//             try {
-//                 owner = await nftContract.methods.ownerOf(i).call();
-//             } catch (error) {
-//                 console.error(`Error getting owner of NFT #${i}:`, error);
-//                 continue;
-//             }
-
-//             try {
-//                 price = await nftContract.methods.tokenPrices(i).call();
-//             } catch (error) {
-//                 console.error(`Error getting price of NFT #${i}:`, error);
-//                 continue;
-//             }
-
-//             const priceInEther = web3.utils.fromWei(price, 'ether');
-
-//             const card = document.createElement('div');
-//             card.className = 'col-md-4';
-//             card.innerHTML = `
-//                 <div class="card">
-//                     <div class="card-body">
-//                         <h5 class="card-title">NFT #${i}</h5>
-//                         <p class="card-text">Owner: ${owner}</p>
-//                         <p class="card-text">Price: ${priceInEther} ETH</p>
-//                         ${owner.toLowerCase() === userAddress.toLowerCase() ? `
-//                         <input type="number" id="price-${i}" placeholder="Set price in ETH" />
-//                         <button onclick="setTokenPrice(${i}, document.getElementById('price-${i}').value)">Set Price</button>
-//                         ` : `
-//                         <button onclick="buyNFT(${i}, '${priceInEther}')">Buy</button>
-//                         `}
+//             const owner = await nftContract.methods.ownerOf(i).call();
+//             console.log(`NFT #${i} owner:`, owner);
+//             if (owner.toLowerCase() === userAddress.toLowerCase()) {
+//                 const card = document.createElement('div');
+//                 card.className = 'col-md-4';
+//                 card.innerHTML = `
+//                     <div class="card">
+//                         <div class="card-body">
+//                             <h5 class="card-title">NFT #${i}</h5>
+//                             <p class="card-text">Owner: ${owner}</p>
+//                         </div>
 //                     </div>
-//                 </div>
-//             `;
-//             marketplace.appendChild(card);
+//                 `;
+//                 marketplace.appendChild(card);
+//             }
 //         }
 //     } catch (error) {
 //         console.error('Error displaying NFTs:', error);
@@ -873,8 +878,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 // }
 
 // document.addEventListener('DOMContentLoaded', async () => {
+//     console.log('DOM content loaded');
 //     await connectMetamask();
-//     await displayNFTs();
+//     await displayNFTs(); // Display NFTs immediately upon page load
 //     document.getElementById('getBalance').addEventListener('click', getBalance);
 //     document.getElementById('createNFT').addEventListener('click', createNFT);
 // });
