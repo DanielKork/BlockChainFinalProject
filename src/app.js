@@ -16,7 +16,7 @@ async function connectMetamask() {
 
 const tokenAddress = '0x8d3c1c862735CCe598a7b9c274F59Fe38A717304';
 const nftAddress = '0x2A5695Af405B3a4b57cB332B358E6655B04EC5Eb';
-const creatorAddress = '0x57697C8b21d6C1Af31CEdf3523E8Fa7Dae9add03';
+const creatorAddress = '0x57697C8b21d6C1Af31CEdf3523E8Fa7Dae9add03'; 
 
 const tokenABI = [
     {
@@ -377,7 +377,7 @@ async function createNFT() {
     try {
         await nftContract.methods.createNFT().send({ from: accounts[0] });
         alert('NFT created');
-        displayNFTs();
+        displayUserNFTs();
     } catch (error) {
         console.error('Error creating NFT:', error);
         alert('Error creating NFT: ' + error.message);
@@ -492,12 +492,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('createNFT').addEventListener('click', createNFT);
     document.getElementById('showMyNFTs').addEventListener('click', async () => {
         document.getElementById('marketplace').style.display = 'none';
-        document.getElementById('myNFTs').style.display = 'block';
+        document.getElementById('myNFTs').style.display = 'flex';
         await displayUserNFTs();
     });
     document.getElementById('showMarketplace').addEventListener('click', async () => {
         document.getElementById('myNFTs').style.display = 'none';
-        document.getElementById('marketplace').style.display = 'block';
+        document.getElementById('marketplace').style.display = 'flex';
         await displayMarketplaceNFTs();
     });
 });
