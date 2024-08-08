@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple NFT Marketplace</title>
+    <title>NFT Marketplace</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -17,20 +16,26 @@
         .card {
             margin-bottom: 20px;
         }
+        .nav-buttons {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="text-center">Simple NFT Marketplace</h1>
+        <h1 class="text-center">NFT Marketplace</h1>
         <div class="text-center mb-4">
             <button class="btn btn-primary" onclick="connectMetamask()">Connect Metamask</button>
         </div>
-        <div class="text-center mb-4">
+        <div class="text-center nav-buttons">
             <button id="getBalance" class="btn btn-info">Get Balance</button>
-            <button id="createNFT" class="btn btn-success">Create NFT</button>
+            <button id="createNFT" class="btn btn-success" style="display: none;">Create NFT</button>
+            <button id="showMyNFTs" class="btn btn-secondary">My NFTs</button>
+            <button id="showMarketplace" class="btn btn-secondary">Marketplace</button>
         </div>
         <div id="marketplace" class="row">
-            <!-- Here will be the marketplace items -->
+        </div>
+        <div id="myNFTs" class="row" style="display: none;">
         </div>
     </div>
 
