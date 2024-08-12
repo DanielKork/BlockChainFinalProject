@@ -19,6 +19,17 @@
         .nav-buttons {
             margin-bottom: 20px;
         }
+        #transactionHistoryPage {
+            margin-top: 50px;
+        }
+
+        #transactionHistoryPage h2 {
+            margin-bottom: 20px;
+        }
+
+        #transactionHistoryTable td, #transactionHistoryTable th {
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
@@ -32,13 +43,30 @@
             <button id="createNFT" class="btn btn-success" style="display: none;">Create NFT</button>
             <button id="showMyNFTs" class="btn btn-secondary">My NFTs</button>
             <button id="showMarketplace" class="btn btn-secondary">Marketplace</button>
-        </div>
+            <button id="showTransactionHistory" class="btn btn-secondary">Transaction History</button> <!-- כפתור חדש -->
+        </div>        
         <div id="marketplace" class="row">
-            <!-- Here will be the marketplace items -->
         </div>
         <div id="myNFTs" class="row" style="display: none;">
-            <!-- Here will be the user's NFTs -->
         </div>
+        <div id="transactionHistoryPage" class="container" style="display: none; margin-top: 20px;">
+            <h2>Transaction History</h2>
+            <table class="table table-striped" id="transactionHistoryTable">
+                <thead>
+                    <tr>
+                        <th scope="col">Date</th>
+                        <th scope="col">Event</th>
+                        <th scope="col">NFT ID</th>
+                        <th scope="col">Details</th>
+                        <th scope="col">Transaction</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- שורות העסקאות יתווספו כאן -->
+                </tbody>
+            </table>
+        </div>
+               
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
