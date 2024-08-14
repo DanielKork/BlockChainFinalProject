@@ -43,7 +43,8 @@
             <button id="createNFT" class="btn btn-success" style="display: none;">Create NFT</button>
             <button id="showMyNFTs" class="btn btn-secondary">My NFTs</button>
             <button id="showMarketplace" class="btn btn-secondary">Marketplace</button>
-            <button id="showTransactionHistory" class="btn btn-secondary">Transaction History</button> <!-- כפתור חדש -->
+            <button id="showTransactionHistory" class="btn btn-secondary">Transaction History</button>
+            <button id="showCart" class="btn btn-secondary">Cart</button>
         </div>        
         <div id="marketplace" class="row">
         </div>
@@ -66,10 +67,129 @@
                 </tbody>
             </table>
         </div>
-               
+        <div id="cartPage" class="container" style="display: none; margin-top: 20px;">
+            <h2>Your Cart</h2>
+            <table class="table table-striped" id="cartTable">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>NFT ID</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Items will be added here -->
+                </tbody>
+            </table>
+            <button class="btn btn-primary" onclick="purchaseCart()">Purchase All</button>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT Marketplace</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 50px;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .nav-buttons {
+            margin-bottom: 20px;
+        }
+        #transactionHistoryPage {
+            margin-top: 50px;
+        }
+
+        #transactionHistoryPage h2 {
+            margin-bottom: 20px;
+        }
+
+        #transactionHistoryTable td, #transactionHistoryTable th {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">NFT Marketplace</h1>
+        <div class="text-center mb-4">
+            <button class="btn btn-primary" onclick="connectMetamask()">Connect Metamask</button>
+        </div>
+        <div class="text-center nav-buttons">
+            <button id="getBalance" class="btn btn-info">Get Balance</button>
+            <button id="createNFT" class="btn btn-success" style="display: none;">Create NFT</button>
+            <button id="showMyNFTs" class="btn btn-secondary">My NFTs</button>
+            <button id="showMarketplace" class="btn btn-secondary">Marketplace</button>
+            <button id="showTransactionHistory" class="btn btn-secondary">Transaction History</button> 
+        </div>        
+        <div id="marketplace" class="row">
+        </div>
+        <div id="myNFTs" class="row" style="display: none;">
+        </div>
+        <div id="transactionHistoryPage" class="container" style="display: none; margin-top: 20px;">
+            <h2>Transaction History</h2>
+            <table class="table table-striped" id="transactionHistoryTable">
+                <thead>
+                    <tr>
+                        <th scope="col">Date</th>
+                        <th scope="col">Event</th>
+                        <th scope="col">NFT ID</th>
+                        <th scope="col">Details</th>
+                        <th scope="col">Transaction</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+        </div>
+               
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html> -->
