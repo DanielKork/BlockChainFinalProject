@@ -14,159 +14,10 @@ async function connectMetamask() {
     }
 }
 
-// const tokenAddress = '0x8a7260Ebd63b730BAe9627Fe99FDfEdB54Bfe335';
-// const nftAddress = '0x033cE78A3E9816EAB2F6D3bD17Df712333E15bcF';
-// const creatorAddress = '0x57697C8b21d6C1Af31CEdf3523E8Fa7Dae9add03';
-
 const tokenAddress = '0x8d3c1c862735CCe598a7b9c274F59Fe38A717304';
-const nftAddress = '0x2A5695Af405B3a4b57cB332B358E6655B04EC5Eb';
-const creatorAddress = '0x57697C8b21d6C1Af31CEdf3523E8Fa7Dae9add03';
-
-const tokenABI = [
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "initialSupply",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "owner",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "spender",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "value",
-                "type": "uint256"
-            }
-        ],
-        "name": "Approval",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "from",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "value",
-                "type": "uint256"
-            }
-        ],
-        "name": "Transfer",
-        "type": "event"
-    },
-    {
-        "inputs": [],
-        "name": "name",
-        "outputs": [
-            {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "symbol",
-        "outputs": [
-            {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "totalSupply",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-            }
-        ],
-        "name": "balanceOf",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "recipient",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "transfer",
-        "outputs": [
-            {
-                "internalType": "bool",
-                "name": "",
-                "type": "bool"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    }
-];
+const nftAddress = '0xdd303Bd0586EF33Dc8b8ec9a10edb6d9ca0026d4'; 
+// const nftAddress = '0x2A5695Af405B3a4b57cB332B358E6655B04EC5Eb';
+const creatorAddress = '0x57697C8b21d6C1Af31CEdf3523E8Fa7Dae9add03'; 
 
 const nftABI = [
     {
@@ -300,6 +151,25 @@ const nftABI = [
                 "internalType": "uint256",
                 "name": "tokenId",
                 "type": "uint256"
+            }
+        ],
+        "name": "getTokenPrice",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "tokenId",
+                "type": "uint256"
             },
             {
                 "internalType": "uint256",
@@ -333,12 +203,12 @@ const nftABI = [
                 "type": "uint256"
             }
         ],
-        "name": "getTokenPrice",
+        "name": "tokenURI",
         "outputs": [
             {
-                "internalType": "uint256",
+                "internalType": "string",
                 "name": "",
-                "type": "uint256"
+                "type": "string"
             }
         ],
         "stateMutability": "view",
@@ -346,7 +216,6 @@ const nftABI = [
     }
 ];
 
-const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
 const nftContract = new web3.eth.Contract(nftABI, nftAddress);
 
 async function checkCreator() {
@@ -372,14 +241,16 @@ async function getBalance() {
     }
 }
 
-async function createNFT() {
+async function createNFT(uri) {
     const accounts = await web3.eth.getAccounts();
     if (accounts.length === 0) {
         alert('Please connect to Metamask');
         return;
     }
     try {
-        await nftContract.methods.createNFT().send({ from: accounts[0] });
+        await nftContract.methods.createNFT(uri).send({
+            from: accounts[0],
+        });
         alert('NFT created');
         displayUserNFTs();
     } catch (error) {
@@ -388,6 +259,82 @@ async function createNFT() {
     }
 }
 
+// async function displayMarketplaceNFTs() {
+//     try {
+//         const totalSupply = await nftContract.methods.getTokenCounter().call();
+//         const accounts = await web3.eth.getAccounts();
+//         const userAddress = accounts[0];
+//         const marketplace = document.getElementById('marketplace');
+//         marketplace.innerHTML = '';
+
+//         for (let i = 0; i < totalSupply; i++) {
+//             try {
+//                 const owner = await nftContract.methods.ownerOf(i).call();
+//                 if (owner.toLowerCase() !== userAddress.toLowerCase()) {
+//                     const price = await nftContract.methods.getTokenPrice(i).call();
+//                     const priceInEther = web3.utils.fromWei(price, 'ether');
+
+//                     const card = document.createElement('div');
+//                     card.className = 'col-md-4';
+//                     card.innerHTML = `
+//                         <div class="card">
+//                             <div class="card-body">
+//                                 <h5 class="card-title">NFT #${i}</h5>
+//                                 <p class="card-text">Owner: ${owner}</p>
+//                                 <p class="card-text">Price: ${priceInEther} ETH</p>
+//                                 <button class="btn btn-success" onclick="buyNFT(${i}, '${priceInEther}')">Buy</button>
+//                             </div>
+//                         </div>
+//                     `;
+//                     marketplace.appendChild(card);
+//                 }
+//             } catch (error) {
+//                 console.error(`Error displaying NFT #${i}:`, error);
+//             }
+//         }
+//     } catch (error) {
+//         console.error('Error displaying NFTs:', error);
+//         alert('Error displaying NFTs: ' + error.message);
+//     }
+// }
+// async function displayUserNFTs() {
+//     try {
+//         const totalSupply = await nftContract.methods.getTokenCounter().call();
+//         const accounts = await web3.eth.getAccounts();
+//         const userAddress = accounts[0];
+//         const myNFTs = document.getElementById('myNFTs');
+//         myNFTs.innerHTML = '';
+
+//         for (let i = 0; i < totalSupply; i++) {
+//             try {
+//                 const owner = await nftContract.methods.ownerOf(i).call();
+//                 if (owner.toLowerCase() === userAddress.toLowerCase()) {
+//                     const price = await nftContract.methods.getTokenPrice(i).call();
+//                     const priceInEther = web3.utils.fromWei(price, 'ether');
+
+//                     const card = document.createElement('div');
+//                     card.className = 'col-md-4';
+//                     card.innerHTML = `
+//                         <div class="card">
+//                             <div class="card-body">
+//                                 <h5 class="card-title">NFT #${i}</h5>
+//                                 <p class="card-text">Owner: ${owner}</p>
+//                                 <input type="number" id="price-${i}" placeholder="Set price in ETH" />
+//                                 <button class="btn btn-primary" onclick="setTokenPrice(${i}, document.getElementById('price-${i}').value)">Set Price</button>
+//                             </div>
+//                         </div>
+//                     `;
+//                     myNFTs.appendChild(card);
+//                 }
+//             } catch (error) {
+//                 console.error(`Error displaying NFT #${i}:`, error);
+//             }
+//         }
+//     } catch (error) {
+//         console.error('Error displaying NFTs:', error);
+//         alert('Error displaying NFTs: ' + error.message);
+//     }
+// }
 async function displayMarketplaceNFTs() {
     try {
         console.log('Fetching total supply of NFTs');
@@ -412,8 +359,32 @@ async function displayMarketplaceNFTs() {
                     console.log(`Fetching URI of NFT #${i}`);
                     const tokenURI = await nftContract.methods.tokenURI(i).call();
                     console.log(`URI of NFT #${i}: ${tokenURI}`);
-                    
-                    const metadata = await fetch(tokenURI).then(response => response.json());
+
+                    if (!tokenURI.startsWith('http')) {
+                        console.error(`Invalid URI for NFT #${i}: ${tokenURI}`);
+                        continue;
+                    }
+
+                    let metadata;
+                    try {
+                        const response = await fetch(tokenURI);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+
+                        const textResponse = await response.text();
+                        console.log(`Raw response for NFT #${i}:`, textResponse);
+
+                        // נסה לנתח את התגובה כ-JSON
+                        try {
+                            metadata = JSON.parse(textResponse);
+                        } catch (jsonError) {
+                            throw new Error(`Failed to parse JSON for NFT #${i}: ${jsonError.message}`);
+                        }
+                    } catch (error) {
+                        console.error(`Error fetching or parsing JSON for NFT #${i}:`, error);
+                        continue; // דלג על ה-NFT הזה אם הייתה שגיאה
+                    }
 
                     const card = document.createElement('div');
                     card.className = 'col-md-4';
@@ -459,10 +430,20 @@ async function displayUserNFTs() {
                         tokenURI = await nftContract.methods.tokenURI(i).call();
                     } catch (error) {
                         console.error(`Error fetching URI for NFT #${i}:`, error);
-                        continue; // אם אין URI, דלג על ה-NFT הזה
+                        continue;
                     }
 
-                    const metadata = await fetch(tokenURI).then(response => response.json());
+                    let metadata;
+                    try {
+                        const response = await fetch(tokenURI);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        metadata = await response.json();
+                    } catch (error) {
+                        console.error(`Error fetching or parsing JSON for NFT #${i}:`, error);
+                        continue;
+                    }
 
                     const card = document.createElement('div');
                     card.className = 'col-md-4';
@@ -495,8 +476,8 @@ async function displayTransactionHistory() {
         const userAddress = accounts[0].toLowerCase();
 
         const events = await nftContract.getPastEvents('allEvents', {
-            fromBlock: 0, 
-            toBlock: 'latest' 
+            fromBlock: 0,
+            toBlock: 'latest'
         });
 
         console.log('Events fetched:', events.length);
@@ -510,27 +491,26 @@ async function displayTransactionHistory() {
         tableBody.innerHTML = '';
 
         const networkId = await web3.eth.net.getId();
-        //console.log('Network ID:', networkId);
         let etherscanBaseUrl;
 
-        switch(networkId) {
-            case 1: // Mainnet
+        switch (networkId) {
+            case 1: 
                 etherscanBaseUrl = 'https://etherscan.io';
                 break;
-            case 3: // Ropsten
+            case 3: 
                 etherscanBaseUrl = 'https://ropsten.etherscan.io';
                 break;
-            case 4: // Rinkeby
+            case 4: 
                 etherscanBaseUrl = 'https://rinkeby.etherscan.io';
                 break;
-            case 5: // Goerli
+            case 5: 
                 etherscanBaseUrl = 'https://goerli.etherscan.io';
                 break;
-            case 11155111n: // Sepolia
+            case 11155111n: 
                 etherscanBaseUrl = 'https://sepolia.etherscan.io';
                 break;
             default:
-                etherscanBaseUrl = 'https://etherscan.io'; // Default
+                etherscanBaseUrl = 'https://etherscan.io'; 
         }
 
         for (let event of events) {
@@ -539,7 +519,7 @@ async function displayTransactionHistory() {
 
             if (!eventType && event.topics && event.topics.length > 0) {
                 const topic0 = event.topics[0];
-                switch(topic0) {
+                switch (topic0) {
                     case "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef":
                         eventType = "Transfer";
                         break;
@@ -547,8 +527,6 @@ async function displayTransactionHistory() {
                         continue;
                 }
             }
-
-            //console.log(`Event type: ${eventType}`, returnValues);
 
             let nftId = returnValues.tokenId !== undefined ? returnValues.tokenId.toString() : 'N/A';
             let relevantEvent = false;
@@ -578,8 +556,6 @@ async function displayTransactionHistory() {
             const date = new Date(timestamp * 1000).toLocaleString();
 
             const transactionLink = `${etherscanBaseUrl}/tx/${transactionHash}`;
-            // console.log('Transaction Hash:', transactionHash);
-            // console.log('Generated Etherscan Link:', transactionLink);
 
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -619,30 +595,15 @@ async function buyNFT(tokenId, price) {
     }
 }
 
-// document.addEventListener('DOMContentLoaded', async () => {
-//     await connectMetamask();
-//     await displayMarketplaceNFTs();
-//     document.getElementById('getBalance').addEventListener('click', getBalance);
-//     document.getElementById('createNFT').addEventListener('click', createNFT);
-//     document.getElementById('showMyNFTs').addEventListener('click', async () => {
-//         document.getElementById('marketplace').style.display = 'none';
-//         document.getElementById('myNFTs').style.display = 'flex';
-//         await displayUserNFTs();
-//     });
-//     document.getElementById('showMarketplace').addEventListener('click', async () => {
-//         document.getElementById('myNFTs').style.display = 'none';
-//         document.getElementById('marketplace').style.display = 'flex';
-//         await displayMarketplaceNFTs();
-//     });
-// });
 document.addEventListener('DOMContentLoaded', async () => {
     await connectMetamask();
     await displayMarketplaceNFTs();
 
-    // כפתורים אחרים...
     document.getElementById('getBalance').addEventListener('click', getBalance);
-    document.getElementById('createNFT').addEventListener('click', createNFT);
-    
+    document.getElementById('createNFT').addEventListener('click', function () {
+        createNFT("https://aqua-left-koala-294.mypinata.cloud/ipfs/QmVbUiCP6K1f9QKYVtQFr6Mu3xLiN7ojB8JezskzCL75pa");
+    });
+
     document.getElementById('showMyNFTs').addEventListener('click', async () => {
         document.getElementById('marketplace').style.display = 'none';
         document.getElementById('myNFTs').style.display = 'flex';
@@ -657,7 +618,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         await displayMarketplaceNFTs();
     });
 
-    // כפתור להצגת היסטוריית עסקאות
     document.getElementById('showTransactionHistory').addEventListener('click', async () => {
         document.getElementById('myNFTs').style.display = 'none';
         document.getElementById('marketplace').style.display = 'none';
@@ -665,6 +625,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         await displayTransactionHistory();
     });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1146,8 +1132,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 //         const userAddress = accounts[0].toLowerCase();
 
 //         const events = await nftContract.getPastEvents('allEvents', {
-//             fromBlock: 0, // תחילת הבלוקצ'יין
-//             toBlock: 'latest' // הבלוק האחרון
+//             fromBlock: 0, 
+//             toBlock: 'latest' 
 //         });
 
 //         console.log('Events fetched:', events.length);
@@ -1158,54 +1144,79 @@ document.addEventListener('DOMContentLoaded', async () => {
 //         }
 
 //         const tableBody = document.querySelector('#transactionHistoryTable tbody');
-//         tableBody.innerHTML = ''; // נקה את התוכן הנוכחי
+//         tableBody.innerHTML = '';
+
+//         const networkId = await web3.eth.net.getId();
+//         //console.log('Network ID:', networkId);
+//         let etherscanBaseUrl;
+
+//         switch(networkId) {
+//             case 1: // Mainnet
+//                 etherscanBaseUrl = 'https://etherscan.io';
+//                 break;
+//             case 3: // Ropsten
+//                 etherscanBaseUrl = 'https://ropsten.etherscan.io';
+//                 break;
+//             case 4: // Rinkeby
+//                 etherscanBaseUrl = 'https://rinkeby.etherscan.io';
+//                 break;
+//             case 5: // Goerli
+//                 etherscanBaseUrl = 'https://goerli.etherscan.io';
+//                 break;
+//             case 11155111n: // Sepolia
+//                 etherscanBaseUrl = 'https://sepolia.etherscan.io';
+//                 break;
+//             default:
+//                 etherscanBaseUrl = 'https://etherscan.io'; // Default
+//         }
 
 //         for (let event of events) {
-//             const { event: eventType, returnValues, transactionHash, blockNumber } = event;
-//             let nftId = returnValues.tokenId || 'N/A';
-//             let relevantEvent = false;
+//             let eventType = event.event;
+//             const { returnValues, transactionHash, blockNumber } = event;
 
-//             // בדוק אם המשתמש היה חלק מהעסקה
-//             if (eventType === 'NFTCreated') {
-//                 if (returnValues.owner.toLowerCase() === userAddress) {
-//                     relevantEvent = true;
-//                 }
-//             } else if (eventType === 'Transfer') {
-//                 if (returnValues.from.toLowerCase() === userAddress || returnValues.to.toLowerCase() === userAddress) {
-//                     relevantEvent = true;
-//                 }
-//             } else if (eventType === 'TokenPriceSet') {
-//                 const owner = await nftContract.methods.ownerOf(nftId).call();
-//                 if (owner.toLowerCase() === userAddress) {
-//                     relevantEvent = true;
+//             if (!eventType && event.topics && event.topics.length > 0) {
+//                 const topic0 = event.topics[0];
+//                 switch(topic0) {
+//                     case "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef":
+//                         eventType = "Transfer";
+//                         break;
+//                     default:
+//                         continue;
 //                 }
 //             }
 
-//             // אם האירוע לא רלוונטי למשתמש הנוכחי, דלג עליו
+//             //console.log(`Event type: ${eventType}`, returnValues);
+
+//             let nftId = returnValues.tokenId !== undefined ? returnValues.tokenId.toString() : 'N/A';
+//             let relevantEvent = false;
+//             let eventDetails = '';
+//             let details = '';
+
+//             if (eventType === 'Transfer' && returnValues.from === "0x0000000000000000000000000000000000000000") {
+//                 eventType = "NFTCreated";
+//             }
+
+//             if (eventType === 'NFTCreated' && returnValues.to.toLowerCase() === userAddress) {
+//                 relevantEvent = true;
+//                 eventDetails = 'NFT Created';
+//                 details = `Creator: ${returnValues.to}`;
+//             } else if (eventType === 'Transfer' && (returnValues.from.toLowerCase() === userAddress || returnValues.to.toLowerCase() === userAddress)) {
+//                 relevantEvent = true;
+//                 eventDetails = 'NFT Transferred';
+//                 details = `From: ${returnValues.from} <br> To: ${returnValues.to}`;
+//             }
+
 //             if (!relevantEvent) {
 //                 continue;
 //             }
 
-//             // קבלת התאריך של הבלוק
 //             const block = await web3.eth.getBlock(blockNumber);
 //             const timestamp = Number(block.timestamp);
 //             const date = new Date(timestamp * 1000).toLocaleString();
 
-//             let eventDetails = '';
-//             let details = '';
-
-//             if (eventType === 'NFTCreated') {
-//                 eventDetails = 'NFT Created';
-//                 details = `Creator: ${returnValues.owner}`;
-//             } else if (eventType === 'Transfer') {
-//                 eventDetails = 'NFT Transferred';
-//                 details = `From: ${returnValues.from} <br> To: ${returnValues.to}`;
-//             } else if (eventType === 'TokenPriceSet') {
-//                 eventDetails = 'NFT Price Set';
-//                 details = `Price: ${web3.utils.fromWei(returnValues.price, 'ether')} ETH`;
-//             }
-
-//             const transactionLink = `https://etherscan.io/tx/${transactionHash}`; // עדכן לפי הרשת (Mainnet/Testnet)
+//             const transactionLink = `${etherscanBaseUrl}/tx/${transactionHash}`;
+//             // console.log('Transaction Hash:', transactionHash);
+//             // console.log('Generated Etherscan Link:', transactionLink);
 
 //             const row = document.createElement('tr');
 //             row.innerHTML = `
@@ -1221,7 +1232,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 //         console.error('Error fetching transaction history:', error);
 //     }
 // }
-
 
 // async function setTokenPrice(tokenId, price) {
 //     const accounts = await web3.eth.getAccounts();
@@ -1250,7 +1260,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 //     await connectMetamask();
 //     await displayMarketplaceNFTs();
 
-//     // כפתורים אחרים...
 //     document.getElementById('getBalance').addEventListener('click', getBalance);
 //     document.getElementById('createNFT').addEventListener('click', createNFT);
     
@@ -1267,8 +1276,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 //         document.getElementById('transactionHistoryPage').style.display = 'none';
 //         await displayMarketplaceNFTs();
 //     });
-
-//     // כפתור להצגת היסטוריית עסקאות
+    
 //     document.getElementById('showTransactionHistory').addEventListener('click', async () => {
 //         document.getElementById('myNFTs').style.display = 'none';
 //         document.getElementById('marketplace').style.display = 'none';
